@@ -17,11 +17,16 @@ import {
 } from '@nextui-org/react'
 import { PlusIcon } from 'lucide-react'
 import Issue from '../_components/Issue'
+import { IssuesQuery } from '@/gql/issuesQuery'
 
 const IssuesPage = () => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure()
   const [issueName, setIssueName] = useState('')
   const [issueDescription, setIssueDescription] = useState('')
+
+  const [{ data, fetching, error }, replay] = useQuery({
+    query: IssuesQuery,
+  })
 
   const onCreate = async (close) => {}
 
@@ -38,12 +43,14 @@ const IssuesPage = () => {
         </Tooltip>
       </PageHeader>
 
-      {[].map((issue) => (
-        <div key={issue.id}>
-          <Issue issue={issue} />
-        </div>
-      ))}
-
+      {fetching && <Spinner />}
+      {error && <div>error</div>}
+      {data &&
+        data.issues.map((issue) => (
+          <div key={issue.id}>
+            <Issue issue={issue} />
+          </div>
+        ))}
       <Modal
         size="2xl"
         isOpen={isOpen}
